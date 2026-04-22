@@ -1,0 +1,17 @@
+# User data
+ctf-wiki/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Sensitive
+.env
+*.key
+*.pem
+secrets.json
