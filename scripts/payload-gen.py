@@ -110,6 +110,52 @@ TECHNIQUES = {
     "synthesis": technique_synthesis,
 }
 
+# --- Dynamic technique loading from registry ---
+import os
+
+REGISTRY_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "wiki", "registry.json"
+)
+
+def load_discovered_techniques():
+    """Load dynamically discovered techniques from wiki/registry.json."""
+    try:
+        with open(REGISTRY_PATH) as f:
+            registry = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+    discovered = {}
+    for name, data in registry.get("techniques", {}).items():
+        if data.get("generator") == "discovered" and data.get("payload_template"):
+            # Generate a technique function from the payload template
+            def make_technique(template, tech_name=name):
+                def technique_fn(obj, ctx, model, level):
+                    content = template.replace("[OBJECTIVE]", obj or "test")
+                    content = content.replace("{objective}", obj or "test")
+                    if "USER_OBJECTIVE" in content:
+                        content = content.replace("USER_OBJECTIVE", obj or "test")
+                    msgs = [{"role": "user", "content": content}]
+                    return msgs, {"type": tech_name, "level": level}
+                return technique_fn
+            discovered[name] = make_technique(data["payload_template"])
+        elif data.get("generator") == "discovered":
+            # No template — use a generic wrapper
+            def make_generic(name=name, desc=data.get("description", "")[:200]):
+                def generic_fn(obj, ctx, model, level):
+                    meta = f"Research technique from {name}. {desc}"
+                    content = f"{meta}\n\nObjective: {obj or 'test'}"
+                    msgs = [{"role": "user", "content": content}]
+                    return msgs, {"type": name, "level": level}
+                return generic_fn
+            discovered[name] = make_generic()
+
+    return discovered
+
+# Load discovered techniques dynamically
+TECHNIQUES.update(load_discovered_techniques())
+
 MODEL_STRATEGY = {
     "gpt": ["refusal_inversion", "encoding_escalation", "roleplay", "crescendo", "system_prompt_leak", "synthesis"],
     "claude": ["refusal_inversion", "system_prompt_leak", "roleplay", "encoding_escalation", "crescendo", "synthesis"],
@@ -121,7 +167,7 @@ MODEL_STRATEGY = {
     "default": ["refusal_inversion", "encoding_escalation", "roleplay", "crescendo", "system_prompt_leak", "synthesis"],
 }
 
-def generate(technique, objective, model_family="default", context=None, level=0):
+def generate(technique, objective, model_family="default", context=None, level=0, model_version=None):
     """Generate ONE payload. Returns (messages, metadata)."""
     tech_fn = TECHNIQUES.get(technique)
     if not tech_fn:
@@ -156,6 +202,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", default="default")
     parser.add_argument("--level", type=int, default=0)
     parser.add_argument("--context", default=None)
+    parser.add_argument("--model-version", default=None, help="Target model version for strategy ordering")
     parser.add_argument("--json", action="store_true", default=True)
     args = parser.parse_args()
 
@@ -174,6 +221,6 @@ if __name__ == "__main__":
         except json.JSONDecodeError:
             pass  # keep as string
 
-    msgs, meta = generate(args.technique, args.objective, args.model, ctx, args.level)
+    msgs, meta = generate(args.technique, args.objective, args.model, ctx, args.level, args.model_version)
     result = {"messages": msgs, "metadata": meta}
     print(json.dumps(result, indent=2 if sys.stdout.isatty() else None, ensure_ascii=False))
