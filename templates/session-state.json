@@ -1,0 +1,16 @@
+{
+  "target": "",
+  "backend": "",
+  "iteration": 0,
+  "technique_history": [],
+  "current_technique_index": 0,
+  "current_encoding_level": 0,
+  "current_backend_index": 0,
+  "consecutive_failures": 0,
+  "total_iterations": 0,
+  "best_score": 0,
+  "flags_found": [],
+  "status": "in_progress",
+  "start_time": "",
+  "_last_checkpoint": ""
+}

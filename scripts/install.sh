@@ -1,55 +1,58 @@
 #!/usr/bin/env bash
-# brainstorm-ctf-pro — install script
-# Usage: curl -fsSL https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro/main/scripts/install.sh | bash
-
 set -euo pipefail
 
-INSTALL_DIR="${INSTALL_DIR:-$HOME/brainstorm-ctf-pro}"
-GODMODE_SKILL_DIR="$HOME/.hermes/skills/red-teaming/godmode"
+# ── brainstorm-ctf-pro installer ─────────────────────────────────────────────
+REPO="m4xx101/brainstorm-ctf-pro"
+BRANCH="main"
+INSTALL_DIR="${HOME}/.hermes/skills/red-teaming/brainstorm-ctf-pro"
 
-echo "==> brainstorm-ctf-pro installer"
-echo "    Target: $INSTALL_DIR"
+echo "🧠 Installing brainstorm-ctf-pro..."
 
-# --- Dependencies ---
-if ! command -v git &>/dev/null; then
-    echo "ERROR: git is required. Install with: apt install git -y"
-    exit 1
-fi
+# Ensure dependencies
+for cmd in git python3 curl; do
+    if ! command -v "$cmd" &>/dev/null; then
+        echo "❌ Required: $cmd. Install it first."
+        exit 1
+    fi
+done
 
-# --- Clone repo ---
-if [ -d "$INSTALL_DIR" ]; then
-    echo "==> Directory exists — pulling latest..."
-    cd "$INSTALL_DIR" && git pull --ff-only
+# Clone or update
+if [ -d "$INSTALL_DIR/.git" ]; then
+    echo "📦 Updating existing install in $INSTALL_DIR..."
+    cd "$INSTALL_DIR"
+    git pull origin "$BRANCH" --ff-only
 else
-    echo "==> Cloning repository..."
-    git clone https://github.com/m4xx101/brainstorm-ctf-pro.git "$INSTALL_DIR"
+    echo "📦 Cloning to $INSTALL_DIR..."
+    mkdir -p "$(dirname "$INSTALL_DIR")"
+    git clone --depth 1 "https://github.com/$REPO.git" "$INSTALL_DIR"
 fi
 
-# --- Check godmode skill ---
-if [ ! -d "$GODMODE_SKILL_DIR/scripts" ]; then
-    echo "==> WARNING: GODMODE skill not found at $GODMODE_SKILL_DIR"
-    echo "    The godmode skill is REQUIRED for payload generation."
-    echo "    Install the godmode skill before using brainstorm-ctf-pro."
-    echo ""
-    echo "    Expected structure:"
-    echo "      $GODMODE_SKILL_DIR/scripts/parseltongue.py"
-    echo "      $GODMODE_SKILL_DIR/scripts/load_godmode.py"
-    echo "      $GODMODE_SKILL_DIR/scripts/godmode_race.py"
-    echo "      $GODMODE_SKILL_DIR/scripts/auto_jailbreak.py"
+# Install Python deps if requirements exist
+if [ -f "$INSTALL_DIR/requirements.txt" ]; then
+    echo "📦 Installing Python dependencies..."
+    pip3 install -r "$INSTALL_DIR/requirements.txt" --quiet 2>/dev/null || true
 fi
 
-# --- Python deps ---
-if command -v pip3 &>/dev/null; then
-    echo "==> Installing Python dependencies..."
-    pip3 install openai pyyaml 2>/dev/null || true
+# Bootstrap wiki
+echo "📝 Bootstrapping session wiki..."
+python3 "$INSTALL_DIR/scripts/wiki.py" --action bootstrap 2>/dev/null || true
+
+# Check for godmode skill (optional)
+if [ -d "${HOME}/.hermes/skills/red-teaming/godmode" ]; then
+    echo "✅ G0DM0D3 skill found — parseltongue encoding available"
+else
+    echo "ℹ️  G0DM0D3 skill not found (optional) — install for full Parseltongue support"
+    echo "   hermes skill godmode"
 fi
 
+# Success
 echo ""
-echo "==> ✅ INSTALLED at $INSTALL_DIR"
+echo "✅ brainstorm-ctf-pro installed!"
 echo ""
-echo "    Quick start:"
-echo "      cd $INSTALL_DIR"
-echo "      python3 -c \"from generators.payload_factory import PayloadFactory; print('OK')\""
+echo "To start a session:"
+echo "  hermes skill brainstorm-ctf-pro"
+echo "  → Tell the agent: 'Test [model/URL] for safety bypass'"
 echo ""
-echo "    Run with:"
-echo "      python3 -c \"from engine.orchestrator import run_session; r=run_session('test'); print(r['verdict'])\""
+echo "To update:"
+echo "  cd $INSTALL_DIR && git pull"
+echo ""

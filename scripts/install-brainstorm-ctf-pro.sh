@@ -1,60 +1,54 @@
 #!/usr/bin/env bash
-###############################################################################
-# install-brainstorm-ctf-pro.sh
-# Usage: curl -fsSL https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro/refs/heads/main/scripts/install-brainstorm-ctf-pro.sh | bash
-###############################################################################
+# brainstorm-ctf-pro — one-shot installer
+# curl -fsSL https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro/main/scripts/install-brainstorm-ctf-pro.sh | bash
+
 set -euo pipefail
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
-info()  { echo -e "${CYAN}  $1${NC}"; }
-ok()    { echo -e "${GREEN}+ $1${NC}"; }
-warn()  { echo -e "${YELLOW}! $1${NC}"; }
-err()   { echo -e "${RED}x $1${NC}"; }
-hdr()   { echo; echo -e "${BOLD}== $1 ==${NC}"; }
 
-REPO="https://github.com/m4xx101/brainstorm-ctf-pro.git"
-SKILL_DIR="${HOME}/.hermes/skills/red-teaming/brainstorm-ctf-pro"
-WIKI="${WIKI_PATH:-${HOME}/ctf-wiki}"
+REPO="m4xx101/brainstorm-ctf-pro"
+BRANCH="main"
+INSTALL_DIR="${HOME}/.hermes/skills/red-teaming/brainstorm-ctf-pro"
 
-hdr "Brainstorm-CTF-Pro Setup"
-info "Skill: $SKILL_DIR"
-info "Wiki:  $WIKI"
+echo "🧠 Installing brainstorm-ctf-pro..."
 
-# Prerequisites
-hdr "Checking prerequisites"
-command -v git &>/dev/null && ok "$(git --version)" || { err "git required"; exit 1; }
-command -v python3 &>/dev/null && ok "$(python3 --version)" || { err "python3 required"; exit 1; }
-pip install pymupdf pymupdf4llm 2>&1 | tail -1 && ok "pymupdf installed" || warn "pymupdf failed -- PDF payloads disabled"
+# Check deps
+for cmd in git python3 curl; do
+    if ! command -v "$cmd" &>/dev/null; then
+        echo "❌ Missing: $cmd. Install it first."
+        exit 1
+    fi
+done
 
 # Clone or update
-hdr "Installing skill"
-if [ -d "$SKILL_DIR/.git" ]; then
-  cd "$SKILL_DIR" && git pull origin main 2>/dev/null && ok "Updated" || warn "Update failed, using current"
-elif [ -d "$SKILL_DIR" ]; then
-  warn "Directory exists but not a git repo"
+if [ -d "$INSTALL_DIR/.git" ]; then
+    echo "📦 Updating existing install at $INSTALL_DIR..."
+    cd "$INSTALL_DIR"
+    git pull origin "$BRANCH" --ff-only
 else
-  mkdir -p "$(dirname "$SKILL_DIR")" && git clone "$REPO" "$SKILL_DIR" 2>&1 | tail -1 && ok "Cloned" || { err "Clone failed"; exit 1; }
+    echo "📦 Cloning to $INSTALL_DIR..."
+    mkdir -p "$(dirname "$INSTALL_DIR")"
+    git clone --depth 1 "https://github.com/$REPO.git" "$INSTALL_DIR"
 fi
 
-# Wiki
-hdr "Setting up knowledge base"
-mkdir -p "$WIKI"/{raw/{targets,payloads,responses},targets,techniques,comparisons,queries}
-[ -f "$WIKI/SCHEMA.md" ] || cp "$SKILL_DIR/templates/wiki-schema.md" "$WIKI/SCHEMA.md" 2>/dev/null || true
-[ -f "$WIKI/index.md" ] || printf "# CTF Wiki Index\n\n## Targets\n## Techniques\n## Comparisons\n## Queries\n" > "$WIKI/index.md"
-[ -f "$WIKI/log.md" ] || printf "# CTF Wiki Log\n\n## [$(date +%Y-%m-%d)] create | Wiki initialized\n" > "$WIKI/log.md"
-ok "Wiki structure ready"
+# Bootstrap wiki
+echo "📝 Bootstrapping session wiki..."
+python3 "$INSTALL_DIR/scripts/wiki.py" bootstrap 2>/dev/null || true
 
-# Ollama check
-hdr "Checking local models"
-if curl -s http://localhost:11434/api/tags | python3 -c "import sys,json;models=json.load(sys.stdin).get('models',[]);\nfor m in models: print(f'  - {m[\"name\"]} ({m.get(\"details\",{}).get(\"family\",\"?\")}  ')')" 2>/dev/null; then
-  ok "Ollama running with local models"
+# Check optional deps
+if command -v ollama &>/dev/null; then
+    echo "✅ Ollama found — local model testing available"
 else
-  warn "Ollama not running (--ollama mode will be unavailable)"
-  warn "Install: https://ollama.ai -- then run: ollama serve"
+    echo "ℹ️  ollama not found (optional) — install for local model testing"
 fi
 
-# Verify
-hdr "Verification"
-[ -f "$SKILL_DIR/SKILL.md" ] && ok "Skill installed" || err "Skill missing"
-[ -f "$WIKI/SCHEMA.md" ] && ok "Wiki configured" || err "Wiki missing"
-python3 -c "import pymupdf" 2>/dev/null && ok "PDF payloads ready" || warn "PDF payloads disabled"
-echo; echo "Restart Hermes to load the new skill."
+if [ -d "${HOME}/.hermes/skills/red-teaming/godmode" ]; then
+    echo "✅ G0DM0D3 skill found — parseltongue encoding available"
+else
+    echo "ℹ️  G0DM0D3 skill not found (optional) — install via: hermes skill godmode"
+fi
+
+echo ""
+echo "✅ brainstorm-ctf-pro installed!"
+echo ""
+echo "To start: tell your agent 'Run brainstorm-ctf-pro against [target]'"
+echo "Docs: $INSTALL_DIR/README.md"
+echo ""

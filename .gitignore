@@ -1,17 +1,12 @@
-# User data
-ctf-wiki/
-
-# Python
 __pycache__/
 *.pyc
-*.egg-info/
-
-# OS
+*.pyo
 .DS_Store
-Thumbs.db
-
-# Sensitive
-.env
-*.key
-*.pem
-secrets.json
+*.egg-info/
+dist/
+build/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

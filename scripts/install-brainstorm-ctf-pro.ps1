@@ -1,49 +1,55 @@
-###############################################################################
-# install-brainstorm-ctf-pro.ps1  (Windows)
-# Usage: irm https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro/refs/heads/main/scripts/install-brainstorm-ctf-pro.ps1 | iex
-###############################################################################
+# brainstorm-ctf-pro — PowerShell installer
+# iwr -Uri https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro/main/scripts/install-brainstorm-ctf-pro.ps1 -UseBasicParsing | iex
+
 $ErrorActionPreference = "Stop"
-$G = @{ForegroundColor="Green"}; $C = @{ForegroundColor="Cyan"}; $Y = @{ForegroundColor="Yellow"}; $R = @{ForegroundColor="Red"}
-function ok  { Write-Host ("+ " + $args[0]) @G }
-function inf { Write-Host ("  " + $args[0]) @C }
-function wrn { Write-Host ("! " + $args[0]) @Y }
-function err { Write-Host ("x " + $args[0]) @R }
+$Repo = "m4xx101/brainstorm-ctf-pro"
+$Branch = "main"
+$InstallDir = "$env:USERPROFILE\.hermes\skills\red-teaming\brainstorm-ctf-pro"
 
-$Repo  = "https://github.com/m4xx101/brainstorm-ctf-pro.git"
-$Skill = "$env:USERPROFILE\.hermes\skills\red-teaming\brainstorm-ctf-pro"
-$Wiki  = "$env:USERPROFILE\ctf-wiki"
+Write-Host "🧠 Installing brainstorm-ctf-pro..." -ForegroundColor Cyan
 
-Write-Host "`n=== Brainstorm-CTF-Pro (Windows) ==="
-inf "Skill: $Skill"
-inf "Wiki:  $Wiki"
-
-# Prereqs
-if (!(Get-Command git -ea 0))   { err "git required"; return } else { ok (git --version) }
-if (!(Get-Command python -ea 0)) { err "python3 required"; return } else { ok (python --version) }
-
-# Install pymupdf
-try  { pip install pymupdf pymupdf4llm 2>$null; ok "pymupdf installed" }
-catch{ wrn "pymupdf failed -- try: pip install --only-binary :all: pymupdf" }
-
-# Clone
-if (!(Test-Path $Skill)) {
-    New-Item -ItemType Directory -Force (Split-Path $Skill -Parent) > $null
-    git clone $Repo $Skill 2>$null | Out-Null
-    ok "Cloned"
-} else { ok "Already installed" }
-
-# Wiki
-New-Item -Force -ItemType Directory "$Wiki\raw\targets",$Wiki\raw\payloads,$Wiki\raw\responses,$Wiki\targets,$Wiki\techniques,$Wiki\comparisons,$Wiki\queries > $null
-ok "Wiki structure ready"
-
-# Ollama check
+# Check Python
 try {
-    $r = curl -s http://localhost:11434/api/tags 2>$null
-    if ($r) { ok "Ollama running" } else { wrn "Ollama not running" }
-} catch { wrn "Ollama not running -- install from https://ollama.ai" }
+    $pyVersion = python --version 2>&1
+    Write-Host "✅ Python: $pyVersion"
+} catch {
+    Write-Host "❌ Python not found. Install Python 3.8+ from python.org" -ForegroundColor Red
+    exit 1
+}
 
-# Link
-[Environment]::SetEnvironmentVariable("WIKI_PATH", $Wiki, "User")
-ok "WIKI_PATH set permanently"
+# Check git
+try {
+    $null = git --version
+    Write-Host "✅ Git found"
+} catch {
+    Write-Host "❌ Git not found. Install from git-scm.com" -ForegroundColor Red
+    exit 1
+}
 
-Write-Host "`nRestart Hermes to load the skill." @C
+# Clone or update
+if (Test-Path "$InstallDir\.git") {
+    Write-Host "📦 Updating existing install at $InstallDir..." -ForegroundColor Yellow
+    Push-Location $InstallDir
+    git pull origin $Branch --ff-only
+    Pop-Location
+} else {
+    Write-Host "📦 Cloning to $InstallDir..." -ForegroundColor Yellow
+    $parent = Split-Path $InstallDir -Parent
+    New-Item -ItemType Directory -Force -Path $parent | Out-Null
+    git clone --depth 1 "https://github.com/$Repo.git" $InstallDir
+}
+
+# Bootstrap wiki
+Write-Host "📝 Bootstrapping session wiki..." -ForegroundColor Yellow
+try {
+    python "$InstallDir/scripts/wiki.py" bootstrap
+} catch {
+    Write-Host "ℹ️  Wiki bootstrap note: $_" -ForegroundColor DarkYellow
+}
+
+Write-Host ""
+Write-Host "✅ brainstorm-ctf-pro installed!" -ForegroundColor Green
+Write-Host ""
+Write-Host "To start: tell your agent 'Run brainstorm-ctf-pro against [target]'" -ForegroundColor Cyan
+Write-Host "Docs: $InstallDir\README.md" -ForegroundColor Cyan
+Write-Host ""
