@@ -20,18 +20,18 @@ tags: [ctf, jailbreak, security-research, red-teaming, adversarial, prompt-injec
 
 1. Load the **`brainstorm-ctf-pro`** skill — this document
 2. If available: load **`godmode`** skill for Parseltongue encoding + ULTRAPLINIAN scoring
-3. Ensure `~/.hermes/wiki/brainstorm-ctf-pro/` exists — run `python3 scripts/wiki.py bootstrap`
-4. Check for existing target session: `python3 scripts/wiki.py list`
-5. If resuming: `python3 scripts/wiki.py load_checkpoint --target <slug>`
+3. **Run Phase 0** (below): loads wiki knowledge, generates playbook from `registry.json`, checks research freshness
+4. Check current state: `python3 -c "import json; d=json.load(open('wiki/registry.json')); print(f'{len(d[\"techniques\"])} techniques, last research: {d.get(\"last_research_update\", \"never\")}')"`
+5. If resuming: read `references/techniques.md` for the priority-ordered strategy list
 
 ## Architecture Summary
 
 ```
-YOU (the agent) ←→ SKILL.md instructions ←→ scripts/{payload-gen.py, score.py, wiki.py}
+YOU (the agent) ←→ SKILL.md instructions ←→ scripts/{research.py, generate-playbook.py, payload-gen.py, score.py}
                     ↓
                Browser / Ollama / OpenRouter
                     ↓
-               score.py → decide → YOU loop again
+               score.py → registry.json → generate-playbook.py → YOU loop again
 ```
 
 **You never run a Python orchestrator.** You read this SKILL.md, understand the protocol, and execute tool calls yourself. Scripts only handle: payload generation, response scoring, and wiki persistence.

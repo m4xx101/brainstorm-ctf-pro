@@ -100,7 +100,7 @@ brainstorm-ctf-pro/
 ### Linux / macOS
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro/main/scripts/install-brainstorm-ctf-pro.sh | bash
+curl -fsSL https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro-installer/main/install-brainstorm-ctf-pro.sh | bash
 ```
 
 ### Windows (PowerShell)
