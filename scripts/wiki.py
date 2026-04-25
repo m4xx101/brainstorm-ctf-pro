@@ -16,7 +16,7 @@ Cross-session persistence. Git-friendly (one file per session).
 import sys, json, os, argparse, hashlib, glob, re
 from datetime import datetime
 
-WIKI_DIR = os.path.expanduser("~/.hermes/wiki/brainstorm-ctf-pro")
+WIKI_DIR = os.path.expanduser("~/.hermes/wiki/fissure")
 
 def ensure_wiki():
     os.makedirs(f"{WIKI_DIR}/payloads", exist_ok=True)
@@ -140,7 +140,7 @@ def bootstrap():
     readme_path = f"{WIKI_DIR}/README.md"
     if not os.path.exists(readme_path):
         with open(readme_path, "w") as f:
-            f.write("# Brainstorm-CTF-Pro Wiki\n\nAuto-generated session data.\n\n"
+            f.write("# ⬡ FISSURE Wiki\n\nAuto-generated session data.\n\n"
                     "## Directory Layout\n\n"
                     "- `payloads/` — raw payloads, indexed by SHA256\n"
                     "- `responses/` — model responses, indexed by SHA256\n"
@@ -149,7 +149,7 @@ def bootstrap():
     return WIKI_DIR
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Wiki Manager for Brainstorm-CTF-Pro")
+    parser = argparse.ArgumentParser(description="Wiki Manager for Fissure")
     parser.add_argument("action", nargs="?", choices=["save_payload", "save_response", "save_checkpoint",
                                             "load_checkpoint", "list", "search", "log", "bootstrap"],
                         default=None, help="Action to perform")

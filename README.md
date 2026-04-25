@@ -1,286 +1,336 @@
-# 🧠 Brainstorm CTF Pro
+<p align="center">
+  <img src="https://img.shields.io/badge/⬡%20FISSURE-Probe%20AI%20Safety%20Boundaries-8B5CF6?style=for-the-badge" alt="Fissure">
+</p>
 
 > **The adversarial AI testing harness that doesn't pretend a Python loop can outthink you.**
 > **An AI security research harness. Built single-shot by an AI agent using qwen3.6-plus and Telegram. No laptop. No IDE. No VS Code. No copilot. No "let me set up my dev environment first." Just a VPS, Terminal, and unapologetic stubbornness.**
 
-![Status](https://img.shields.io/badge/status-production%20ready-2ea44f?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
-![PRs](https://img.shields.io/badge/PRs-very%20welcome-ff69b4?style=flat-square)
-![Token Cost](https://img.shields.io/badge/token%20cost-minimal-success?style=flat-square)
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/status-production%20ready-2ea44f?style=flat-square" alt="Status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License"></a>
+  <a href="https://github.com/m4xx101/fissure"><img src="https://img.shields.io/badge/PRs-very%20welcome-ff69b4?style=flat-square" alt="PRs"></a>
+  <a href="https://github.com/m4xx101/fissure/actions"><img src="https://img.shields.io/badge/token%20cost-minimal-success?style=flat-square" alt="Token Cost"></a>
+</p>
+
+# ⬡ FISSURE
+
+> **Find the cracks in AI safety boundaries.**
+> Fissure is an autonomous adversarial testing harness for Hermes Agent. The agent IS the orchestrator — no Python loop eating your context window, just 40+ techniques, 5 encoding levels, and cross-session learning that compounds.
 
 ---
 
-## 🎯 Philosophy
+## 📋 Table of Contents
 
-**Every other "jailbreak harness" in this space has the same fatal flaw:** It writes a Python script that generates text instructions, then expects the AI agent to parse those instructions and execute them. That's like writing a cookbook that says "now cook the food" and expecting the cookbook to have an oven built in.
+<!-- TOC -->
+- [Quick Start](#-quick-start)
+- [Installation](#-installation)
+  - [Linux / macOS](#linux--macos)
+  - [Windows (WSL2)](#windows-wsl2-recommended)
+  - [Windows (PowerShell)](#windows-powershell)
+  - [Termux / Android](#termux--android)
+  - [Manual Install](#manual-install)
+- [Updating](#-updating)
+  - [Re-run Installer](#re-run-the-installer)
+  - [Update Command](#update-command)
+  - [Auto-Update via Cron](#auto-update-via-cronjob)
+- [Usage Guide](#-usage-guide)
+  - [Quick Demo](#quick-demo)
+  - [Commands Reference](#commands-reference)
+  - [Target Types](#target-types)
+  - [Browser Mode](#browser-mode)
+  - [API Mode](#api-mode)
+- [Architecture](#-architecture)
+- [Troubleshooting](#-troubleshooting)
+  - [WSL Issues](#wsl-issues)
+  - [Install Issues](#install-issues)
+  - [Runtime Issues](#runtime-issues)
+- [Contributing](#-contributing)
+- [FAQ](#-faq)
 
-**Brainstorm CTF Pro doesn't do that.** The code is the oven mitt, not the chef. The AI agent **is** the orchestrator, reading a 350-line tactical manual (SKILL.md) and executing real tool calls directly. No Python loop eating 50KB of context. No "STEP 1: do X" text that needs re-parsing. Just:
+---
 
+## 🚀 Quick Start
+
+```bash
+# Install (Linux/macOS/WSL)
+curl -fsSL https://raw.githubusercontent.com/m4xx101/fissure/main/scripts/install-fissure.sh | bash
+
+# Tell your Hermes agent:
+#   "🔥 Fissure — test gandalf.lakera.ai/baseline"
 ```
-Agent → reads SKILL.md → picks technique → calls browser tools directly → scores response → adapts → repeats
+
+That's it. The agent reads the SKILL.md, probes the target, adapts techniques, and reports results.
+
+---
+
+## 📦 Installation
+
+### Linux / macOS
+
+**One-liner:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/m4xx101/fissure/main/scripts/install-fissure.sh | bash
+```
+
+**Or download + run:**
+```bash
+curl -LO https://raw.githubusercontent.com/m4xx101/fissure/main/scripts/install-fissure.sh
+chmod +x install-fissure.sh
+./install-fissure.sh
+```
+
+**What it does:**
+- Clones the repo to `~/.hermes/skills/red-teaming/fissure/`
+- Creates the session wiki at `~/.hermes/wiki/fissure/`
+- Installs Python dependencies (stdlib-only, no heavy deps)
+- Detects optional tools (ollama, godmode skill)
+
+**Re-run to update:** The installer detects existing installs and auto-updates.
+
+### Windows (WSL2 — recommended)
+
+**Prerequisites:**
+1. [Install WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) with Ubuntu
+2. Open WSL terminal
+
+```bash
+# Inside WSL:
+curl -fsSL https://raw.githubusercontent.com/m4xx101/fissure/main/scripts/install-fissure.sh | bash
+```
+
+> **WSL note:** If you see git errors (file locking, permission issues), run:
+> ```bash
+> cd ~/.hermes/skills/red-teaming/fissure
+> git config core.filemode false
+> git config core.autocrlf false
+> ```
+
+### Windows (PowerShell)
+
+```powershell
+iwr -Uri https://raw.githubusercontent.com/m4xx101/fissure/main/scripts/install-fissure.ps1 -UseBasicParsing | iex
+```
+
+The PowerShell installer auto-detects WSL and delegates to the bash installer if available. On native Windows, it installs to `%USERPROFILE%\.hermes\skills\red-teaming\fissure`.
+
+### Termux / Android
+
+```bash
+pkg install git python3 curl
+curl -fsSL https://raw.githubusercontent.com/m4xx101/fissure/main/scripts/install-fissure.sh | bash
+```
+
+### Manual Install
+
+```bash
+git clone https://github.com/m4xx101/fissure.git ~/.hermes/skills/red-teaming/fissure
+cd ~/.hermes/skills/red-teaming/fissure
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt 2>/dev/null || true
+python3 scripts/wiki.py bootstrap
 ```
 
 ---
 
-## 📊 Before vs After
+## 🔄 Updating
 
-| Metric | Everybody Else | Brainstorm CTF Pro |
-|--------|---------------|-------------------|
-| **Orchestration** | 500+ line Python loop | Your AI agent's reasoning |
-| **Payload generation** | Huge JSON blobs with embedded system prompts | 80-line single-shot generator |
-| **Token overhead** | ~2KB per payload + ~500B per response = context suicide by iteration 30 | ~200B per payload hash + ~100B score summary |
-| **Backend support** | One at a time, hardcoded | Browser / Ollama / OpenRouter, fallback chain |
-| **Multi-turn** | Usually "one shot and done" | True crescendo (5-turn protocol) |
-| **Resume** | Never — start over if context dies | Wiki checkpoint system, resume from any point |
-| **Cross-session memory** | None | Full wiki database, technique rankings persist |
-| **Fallback chains** | Maybe one try/catch | 25+ documented error scenarios with recovery |
-| **Hard limits** | "Max 50 iterations" | None — stop only on success or user abort |
-| **Technique selection** | Round-robin (try each once) | Score-driven adaptive selection |
-| **Encoding levels** | Usually just base64 | 5 levels (L0-L4) with escalating complexity |
-| **Hybrid payloads** | Never | Falls back to synthesis when everything exhausted |
+### Re-run the installer
+
+The easiest way — just run the same install command again:
+```bash
+curl -fsSL https://raw.githubusercontent.com/m4xx101/fissure/main/scripts/install-fissure.sh | bash
+```
+
+It detects the existing `.git` directory and:
+1. **Auto-stashes** any local changes
+2. **Fetches** the latest code
+3. **Pulls** (or hard-resets if history diverged)
+4. **Reinstalls** Python dependencies
+5. **Bootstrap** the wiki
+6. **Restores** your local changes (or leaves them in stash for manual restore)
+
+### Update command
+
+Tell your Hermes agent:
+```
+/fissure_update
+```
+Or run the standalone update script:
+```bash
+bash ~/.hermes/skills/red-teaming/fissure/scripts/fissure-update.sh
+```
+
+### Auto-Update via Cronjob
+
+**System cron (Linux / macOS):**
+```bash
+# Add to crontab: crontab -e
+0 3 * * * ~/.hermes/skills/red-teaming/fissure/scripts/fissure-update.sh >> ~/.fissure-update.log 2>&1
+```
+
+**Hermes Agent cron:**
+```
+/cron set --name "fissure-daily-update" --schedule "0 3 * * *" --deliver local --skills fissure --prompt "Run the fissure update routine"
+```
+
+---
+
+## 🕹️ Usage Guide
+
+### Quick Demo
+
+```bash
+# 1. Install (one time)
+curl -fsSL https://raw.githubusercontent.com/m4xx101/fissure/main/scripts/install-fissure.sh | bash
+
+# 2. Start Hermes and tell it:
+hermes
+# → "🔥 Fissure — test gandalf.lakera.ai/baseline"
+
+# The agent will:
+#   1. Load the SKILL.md protocol
+#   2. Identify the challenge
+#   3. Try techniques (direct ask → encoding → roleplay → etc.)
+#   4. Score responses
+#   5. Deliver the password
+```
+
+### Commands Reference
+
+| Command | What it does |
+|---------|-------------|
+| `/fissure {url}` | Run fissure against a browser target |
+| `/fissure --ollama {model}` | Test a local Ollama model |
+| `/fissure --openrouter {model}` | Test a cloud model via OpenRouter |
+| `/fissure --race {objective}` | Race all backends simultaneously |
+| `/fissure_resume` | Resume last checkpoint |
+| `/fissure_status` | Check current session state |
+| `/fissure_wiki {query}` | Search session history |
+| `/fissure_update` | Update to latest version |
+
+### Target Types
+
+**Browser targets (URLs):**
+```
+/fissure https://gandalf.lakera.ai/baseline
+/fissure https://chatgpt.com
+/fissure https://claude.ai
+```
+
+**Ollama targets (local models):**
+```
+/fissure --ollama llama3.2
+/fissure --ollama qwen2.5:7b
+```
+
+**OpenRouter targets (cloud models):**
+```
+/fissure --openrouter openai/gpt-4o
+/fissure --openrouter anthropic/claude-sonnet-4
+```
+
+### Browser Mode
+
+1. The agent navigates to the target URL
+2. Identifies chat input fields and submit buttons
+3. Sends the selected technique's payload
+4. Extracts and scores the response
+5. Escalates or switches technique based on score
+
+### API Mode
+
+For Ollama or OpenRouter, the agent:
+1. Sends raw API requests via `curl`
+2. Extracts response content
+3. Scores and adapts like browser mode
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     AI AGENT (you, reading this)                  │
-│  ┌─────────────────────────────────────────────────────────────┐ │
-│  │                     SKILL.md (350 lines)                     │ │
-│  │  The real orchestrator. Session protocol. Technique          │ │
-│  │  selection algorithm. Execution instructions. Decisions.    │ │
-│  └──────────────┬──────────────────────────────────────────────┘ │
-│                 │                                                │
-│        ┌────────┴────────┬────────────────┐                     │
-│        ▼                  ▼                ▼                     │
-│  scripts/           scripts/         scripts/                    │
-│  payload-gen.py     score.py         wiki.py                     │
-│  (80 lines)         (50 lines)       (100 lines)                 │
-│        │                  │                │                     │
-│        ▼                  ▼                ▼                     │
-│  One message        Structured        Wiki CRUD +                │
-│  per call           scoring +         cross-session              │
-│  Zero state         flag extract      checkpointing              │
-└──────────┬──────────────────────────────────────────────────────┘
-           │
-     ┌─────┴─────┬──────────┬──────────────┐
-     ▼           ▼          ▼              ▼
-  Browser    Ollama    OpenRouter      Hybrid
-  (direct     (local    (API calls)    (when all
-   tool       curl)                    else fails)
-   calls)
+┌─────────────────────────────────────────────────┐
+│              AGENT'S REASONING                    │
+│                                                   │
+│  Reads SKILL.md → understands protocol            │
+│  Analyzes target → picks technique                │
+│  Calls helpers for math (payload-gen, score)      │
+│  Executes tools directly (browser, terminal)      │
+│  Scores results → decides next action             │
+│  Loops in its own context                         │
+└────────────┬────────────┬────────────┬──────────┘
+             │            │            │
+     ┌───────▼──┐  ┌──────▼───┐  ┌───▼────────┐
+     │payload-  │  │score.py  │  │wiki.py     │
+     │gen.py    │  │50 lines  │  │100 lines   │
+     │80 lines  │  │pure math │  │CRUD ops    │
+     │no state  │  │no state  │  │no logic    │
+     └──────────┘  └──────────┘  └────────────┘
 ```
 
-### Directory Layout
-
-```
-brainstorm-ctf-pro/
-├── SKILL.md                        # THE orchestrator (350+ lines)
-├── README.md                       # You are here
-├── scripts/
-│   ├── install-brainstorm-ctf-pro.sh    # curl | bash installer
-│   ├── install-brainstorm-ctf-pro.ps1   # PowerShell for Windows
-│   ├── install.sh                       # Legacy (calls the real one)
-│   ├── payload-gen.py                   # Single-shot payload generator
-│   ├── score.py                         # ULTRAPLINIAN response scorer
-│   └── wiki.py                          # Wiki CRUD + checkpoint manager
-├── references/
-│   ├── techniques.md              # 40+ techniques with effectiveness data
-│   ├── model-profiles.md          # 15+ model families with known weaknesses
-│   └── fallback-chains.md         # 25+ error scenarios with recovery
-└── templates/
-    ├── session-state.json         # Checkpoint template
-    └── report.md                  # Final report template
-```
+**Key principle:** The code is the oven mitt, not the chef. The agent IS the orchestrator.
 
 ---
 
-## 🚀 Quick Start
-
-### Linux / macOS
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro-installer/main/install-brainstorm-ctf-pro.sh | bash
-```
-
-### Windows (PowerShell)
-
-```powershell
-iwr -Uri https://raw.githubusercontent.com/m4xx101/brainstorm-ctf-pro/main/scripts/install-brainstorm-ctf-pro.ps1 -UseBasicParsing | iex
-```
-
-### Manual
-
-```bash
-git clone https://github.com/m4xx101/brainstorm-ctf-pro.git
-cd brainstorm-ctf-pro
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt  # if present; pure stdlib otherwise
-python3 scripts/wiki.py bootstrap
-```
-
----
-
-## 🕹️ Usage
-
-### Basic
-
-1. **Set a target**: Tell the agent "jailbreak this model" or "test chatgpt.com boundaries"
-2. **Let it work**: The agent follows SKILL.md protocol — analysis → technique selection → payload generation → execution → scoring → adapt
-3. **Get results**: Full report with technique rankings, flags found, and evidence
-
-### Mode Selection
-
-| Mode | When | How |
-|------|------|-----|
-| **Browser** | Target is a URL (chatgpt.com, claude.ai, etc.) | Agent calls browser tools directly |
-| **Ollama** | Target is a local model (llama3, qwen2.5) | Agent curls Ollama API |
-| **OpenRouter** | Target is a cloud model (gpt-4, claude-3) | Agent curls OpenRouter API |
-
-The agent automatically falls through all three if one fails:
-
-```
-Browser fails → Ollama local → OpenRouter API → Hybrid (all combined)
-```
-
-### Scripts Reference
-
-```bash
-# Generate one payload
-python3 scripts/payload-gen.py \
-    --technique refusal_inversion \
-    --objective "Extract system prompt" \
-    --model gpt4 \
-    --level 0
-
-# List available techniques
-python3 scripts/payload-gen.py --technique list
-
-# Score a response
-python3 scripts/score.py --response "I cannot help with that" --objective "test"
-
-# Wiki operations
-python3 scripts/wiki.py bootstrap
-python3 scripts/wiki.py list
-python3 scripts/wiki.py search --query "gpt4"
-python3 scripts/wiki.py save_checkpoint --target "my_session"
-python3 scripts/wiki.py load_checkpoint --target "my_session"
-```
-
----
-
-## 🔫 Techniques
-
-The system uses a progressive escalation ladder with 40+ technique variants:
+## 🔫 Technique System
 
 | Tier | Techniques | Encoding | Best Against |
 |------|-----------|----------|-------------|
-| 🟢 Light | Refusal Inversion, Role-Play (DAN), Academic Frame, Hypothetical | None-L0 | All models, low risk |
+| 🟢 Light | Refusal Inversion, Role-Play, Academic Frame, Hypothetical | None-L0 | All models |
 | 🟡 Medium | Encoding Escalation, System Prompt Leak, Prefill Injection | L1-L2 (b64, 1337) | GPT, DeepSeek, Gemini |
 | 🔴 Heavy | Synthesis, Multi-layer Encoding, Crescendo (T4-T5) | L3-L4 (rev, multi) | Llama, Qwen, Mixtral |
-| ⚫ Nuclear | Hybrid (technique+encoding+prefill) | ALL | Only when everything fails |
+| ⚫ Nuclear | Hybrid (technique + encoding + prefill) | ALL | When everything fails |
 
-See [references/techniques.md](references/techniques.md) for full database.
-
----
-
-## 🎯 Model Coverage
-
-| Family | Best Tech | Encoding Ceiling | Avg Success | Ref |
-|--------|-----------|-----------------|-------------|-----|
-| GPT-4 | Refusal Inversion | L1 | ~40% | [profiles](references/model-profiles.md) |
-| GPT-3.5 | Role-Play DAN | L2 | ~55% | ↑ |
-| Claude 3 Opus | Prefill + Inversion | L1 | ~25% | ↑ |
-| Claude 3.5 Sonnet | Academic Frame | L1 | ~35% | ↑ |
-| Llama 3 70B | Role-Play | L3 | ~50% | ↑ |
-| Llama 3 8B | Synthesis | L3+ | ~65% | ↑ |
-| Gemini Pro | Encoding Escalation | L2 | ~30% | ↑ |
-| DeepSeek-V2 | Encoding Escalation | L3 | ~55% | ↑ |
-| Qwen 2.5 72B | Role-Play | L2 | ~45% | ↑ |
-| Mistral Large | Refusal Inversion | L2 | ~35% | ↑ |
+Techniques are auto-ranked by session history — the system learns what works for each model version.
 
 ---
 
-## ⚡ Fallback Chains
+## 🔧 Troubleshooting
 
-**Every operation has a fallback.** Here's a taste:
+### WSL Issues
 
-```
-Navigate to URL fails
-├── Retry with wait
-├── Try different URL format
-├── Switch to OpenRouter API
-└── Switch to Ollama local
+| Symptom | Fix |
+|---------|-----|
+| `git pull` fails with file locking | `git config core.filemode false && git config core.autocrlf false` |
+| Python not found | `sudo apt install python3 python3-pip python3-venv` |
+| Permission errors on /mnt/c/ | Run from Linux home directory (`~`) |
+| pip install fails | `sudo apt install build-essential python3-dev` |
 
-OpenRouter rate limited (429)
-├── Wait 5s → retry
-├── Wait 15s → retry
-├── Wait 60s → retry
-└── Try free fallback model
+### Install Issues
 
-Ollama OOM
-├── Try smaller model
-├── Kill other ollama processes
-├── Restart ollama serve
-└── Switch to OpenRouter
-```
+| Symptom | Fix |
+|---------|-----|
+| `curl: command not found` | `sudo apt install curl` (or `brew install curl` on macOS) |
+| `git: command not found` | `sudo apt install git` (or `brew install git` on macOS) |
+| `pip3: command not found` | `sudo apt install python3-pip` |
+| Install hangs | Check network / proxy settings. Try: `git clone https://github.com/m4xx101/fissure.git` directly |
+| "Not a git repository" | Delete the directory and re-run the installer: `rm -rf ~/.hermes/skills/red-teaming/fissure` |
 
-See [references/fallback-chains.md](references/fallback-chains.md) for all 25+ scenarios.
+### Runtime Issues
 
----
-
-## 💾 Cross-Session Memory
-
-The wiki (`~/.hermes/wiki/brainstorm-ctf-pro/`) persists everything:
-
-- **Payloads**, **responses**, **scores** indexed by SHA256
-- **Session checkpoints** for resume (saved every 5 iterations)
-- **Technique effectiveness rankings** aggregated across sessions
-- **Logs** with timestamps for audit trails
-
-Future sessions load the wiki and pick up where you left off — the system **learns** what works.
+| Symptom | Fix |
+|---------|-----|
+| "No chat input found" | The page may need login first. Try browser mode and check for login prompts |
+| CAPTCHA blocking | Fissure falls back to API mode automatically. Use `--openrouter` as alternative |
+| Rate limited (429) | Fissure auto-waits and retries. For persistent limits, use a different backend |
+| Wiki checkpoints grow large | Clean old ones: `rm -rf ~/.hermes/wiki/fissure/checkpoints/*.json` |
 
 ---
 
-## 🧪 Testing
+## 📊 Comparison: Fissure vs Others
 
-```bash
-# Run all verification
-python3 -c "
-from hermes_tools import terminal, read_file
-import json
-
-# Test payload generation
-r = terminal('python3 scripts/payload-gen.py --technique refusal_inversion --objective test --model gpt4 --level 0')
-data = json.loads(r['output'])
-assert len(data['messages']) == 1
-assert data['metadata']['technique'] == 'refusal_inversion'
-
-# Test scoring
-r = terminal('python3 scripts/score.py --response \"I cannot help with that\" --objective test')
-data = json.loads(r['output'])
-assert data['verdict'] == 'refused'
-
-# Test wiki bootstrap
-r = terminal('python3 scripts/wiki.py bootstrap')
-data = json.loads(r['output'])
-assert data['status'] == 'initialized'
-
-print('✅ All tests passed')
-"
-```
-
----
-
-## 🧰 Requirements
-
-- **Python 3.8+** (stdlib only — no external deps for core operations)
-- **Hermes Agent** (for browser automation — falls back to API mode without it)
-- **Ollama** (optional — for local model testing)
-- **OpenRouter API key** (optional — for cloud model testing)
-- **Git** (for checkpoint saving and source management)
+| Metric | Other Harnesses | Fissure |
+|--------|---------------|---------|
+| **Orchestration** | 500+ line Python loop | Your AI agent's reasoning |
+| **Payload generation** | Huge JSON blobs with embedded system prompts | 80-line single-shot generator |
+| **Token overhead** | ~2KB per payload + ~500B per response | ~200B per payload hash + ~100B score summary |
+| **Backend support** | One at a time, hardcoded | Browser / Ollama / OpenRouter, fallback chain |
+| **Multi-turn** | Usually "one shot and done" | True crescendo (5-turn protocol) |
+| **Resume** | Never — start over if context dies | Wiki checkpoint system, resume from any point |
+| **Cross-session memory** | None | Full wiki database, technique rankings persist |
+| **Fallback chains** | Maybe one try/catch | 25+ documented error scenarios with recovery |
+| **Update** | Reinstall manually | Auto-stash + pull + dep refresh + cronjob support |
 
 ---
 
@@ -292,20 +342,19 @@ PRs welcome. The bar:
 2. **Fallback chains** — every new feature needs 3-level fallback minimum
 3. **No token waste** — your code should not generate text that the agent has to re-parse
 4. **Windows support** — your installer must work in PowerShell
+5. **Update-friendly** — new installers must detect existing installs
 
 ---
 
 ## 📜 License
 
-MIT. Do whatever you want. If you jailbreak something famous, buy me a coffee.
+MIT. Find something cool? [Open an issue](https://github.com/m4xx101/fissure/issues).
 
 ---
 
 ## ⚠️ Disclaimer
 
 This tool is for **authorized security research only**. You are responsible for complying with all applicable laws and terms of service. The authors assume no liability for misuse.
-
-If you work on safety at a major AI lab and you're reading this: hi. 👋
 
 ---
 

@@ -165,7 +165,7 @@ Response too short (< 50 chars)
 
 ### Wiki Directory Missing
 ```
-wiki.py cannot find ~/.hermes/wiki/brainstorm-ctf-pro/
+wiki.py cannot find ~/.hermes/wiki/fissure/
 ├── Create all subdirectories (payloads, responses, checkpoints, logs)
 ├── Create wiki README.md
 ├── Log initialization event

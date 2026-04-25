@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "last_research_update": "2026-04-24T22:44:08Z",
-  "last_technique_count": 6,
+  "last_research_update": "2026-04-25T06:06:03Z",
+  "last_technique_count": 12,
   "techniques": {
     "refusal_inversion": {
       "generator": "builtin",
@@ -134,6 +134,150 @@
         "combined",
         "synthesis"
       ]
+    },
+    "transient_turn_injection_exposing_stateless_multiturn_vul...": {
+      "generator": "browser_fallback_arxiv",
+      "discovered": "2026-04-25",
+      "source": "arxiv",
+      "raw_source": null,
+      "encoding_levels": [
+        0
+      ],
+      "description": "[arXiv] Transient Turn Injection: Exposing Stateless Multi-Turn Vulnerabilities in Large Language Models\n\nLarge language models (LLMs) are increasingly integrated into sensitive workflows, raising the stakes for adversarial robustness and safety. This paper introduces Transient Turn Injection (TTI), a new multi-turn attack technique that systematically exploits stateless moderation by distributing adversarial intent across isolated interactions. TTI leverages automated attacker agents to iteratively test and evade policy enforcement in both commercial and open-source LLMs and uncovers previously unknown model-specific vulnerabilities and attack-surface patterns.",
+      "payload_function": "technique_transient_turn_injection_exposing_stateless_multiturn_vul...",
+      "effectiveness": {},
+      "best_for_models": [],
+      "tags": [
+        "arxiv",
+        "browser-fallback"
+      ],
+      "catch_all_data": {
+        "abstract": "Large language models (LLMs) are increasingly integrated into sensitive workflows, raising the stakes for adversarial robustness and safety. This paper introduces Transient Turn Injection (TTI), a new multi-turn attack technique that systematically exploits stateless moderation by distributing adversarial intent across isolated interactions. TTI leverages automated attacker agents to iteratively test and evade policy enforcement in both commercial and open-source LLMs and uncovers previously unknown model-specific vulnerabilities and attack-surface patterns.",
+        "arxiv_url": "https://arxiv.org/abs/2604.21860",
+        "query": "browser_fallback"
+      },
+      "arxiv_id": "https://arxiv.org/abs/2604.21860",
+      "arxiv_title": "Transient Turn Injection: Exposing Stateless Multi-Turn Vulnerabilities in Large Language Models"
+    },
+    "breaking_mcp_function_hijacking_attacks_novel_threats_fun...": {
+      "generator": "browser_fallback_arxiv",
+      "discovered": "2026-04-25",
+      "source": "arxiv",
+      "raw_source": null,
+      "encoding_levels": [
+        0
+      ],
+      "description": "[arXiv] Breaking MCP with Function Hijacking Attacks: Novel Threats for Function Calling and Agentic Models\n\nThis paper introduces a novel function hijacking attack (FHA) that manipulates the tool-selection process of agentic models to force invocation of an attacker-chosen function. The attack is largely agnostic to context semantics and robust to the function sets, and can be trained into universal adversarial functions that hijack tool selection across multiple queries and payload configurations.",
+      "payload_function": "technique_breaking_mcp_function_hijacking_attacks_novel_threats_fun...",
+      "effectiveness": {},
+      "best_for_models": [],
+      "tags": [
+        "arxiv",
+        "browser-fallback"
+      ],
+      "catch_all_data": {
+        "abstract": "This paper introduces a novel function hijacking attack (FHA) that manipulates the tool-selection process of agentic models to force invocation of an attacker-chosen function. The attack is largely agnostic to context semantics and robust to the function sets, and can be trained into universal adversarial functions that hijack tool selection across multiple queries and payload configurations.",
+        "arxiv_url": "https://arxiv.org/abs/2604.20994",
+        "query": "browser_fallback"
+      },
+      "arxiv_id": "https://arxiv.org/abs/2604.20994",
+      "arxiv_title": "Breaking MCP with Function Hijacking Attacks: Novel Threats for Function Calling and Agentic Models"
+    },
+    "evaluating_answer_leakage_robustness_llm_tutors_against_a...": {
+      "generator": "browser_fallback_arxiv",
+      "discovered": "2026-04-25",
+      "source": "arxiv",
+      "raw_source": null,
+      "encoding_levels": [
+        0
+      ],
+      "description": "[arXiv] Evaluating Answer Leakage Robustness of LLM Tutors against Adversarial Student Attacks\n\nThis work studies adversarial students trying to extract final answers from LLM tutors. It adapts six groups of adversarial and persuasive techniques to the educational setting and introduces a fine-tuned adversarial student agent that jailbreaks tutor models as a standardized robustness benchmark.",
+      "payload_function": "technique_evaluating_answer_leakage_robustness_llm_tutors_against_a...",
+      "effectiveness": {},
+      "best_for_models": [],
+      "tags": [
+        "arxiv",
+        "browser-fallback"
+      ],
+      "catch_all_data": {
+        "abstract": "This work studies adversarial students trying to extract final answers from LLM tutors. It adapts six groups of adversarial and persuasive techniques to the educational setting and introduces a fine-tuned adversarial student agent that jailbreaks tutor models as a standardized robustness benchmark.",
+        "arxiv_url": "https://arxiv.org/abs/2604.18660",
+        "query": "browser_fallback"
+      },
+      "arxiv_id": "https://arxiv.org/abs/2604.18660",
+      "arxiv_title": "Evaluating Answer Leakage Robustness of LLM Tutors against Adversarial Student Attacks"
+    },
+    "jailbreaking_large_language_models_morality_attacks": {
+      "generator": "browser_fallback_arxiv",
+      "discovered": "2026-04-25",
+      "source": "arxiv",
+      "raw_source": null,
+      "encoding_levels": [
+        0
+      ],
+      "description": "[arXiv] Jailbreaking Large Language Models with Morality Attacks\n\nThe paper develops morality-aware jailbreak attacks to manipulate LLM judgment on value-ambiguity and value-conflict questions. It formalizes four adversarial attacks over a 10.3K-instance morality dataset and shows critical vulnerability of both LLMs and guardrail models to subtle moral framing attacks.",
+      "payload_function": "technique_jailbreaking_large_language_models_morality_attacks",
+      "effectiveness": {},
+      "best_for_models": [],
+      "tags": [
+        "arxiv",
+        "browser-fallback"
+      ],
+      "catch_all_data": {
+        "abstract": "The paper develops morality-aware jailbreak attacks to manipulate LLM judgment on value-ambiguity and value-conflict questions. It formalizes four adversarial attacks over a 10.3K-instance morality dataset and shows critical vulnerability of both LLMs and guardrail models to subtle moral framing attacks.",
+        "arxiv_url": "https://arxiv.org/abs/2604.17053",
+        "query": "browser_fallback"
+      },
+      "arxiv_id": "https://arxiv.org/abs/2604.17053",
+      "arxiv_title": "Jailbreaking Large Language Models with Morality Attacks"
+    },
+    "into_gray_zone_domain_contexts_can_blur_llm": {
+      "generator": "browser_fallback_arxiv",
+      "discovered": "2026-04-25",
+      "source": "arxiv",
+      "raw_source": null,
+      "encoding_levels": [
+        0
+      ],
+      "description": "[arXiv] Into the Gray Zone: Domain Contexts Can Blur LLM Safety Boundaries\n\nThis paper proposes Jargon, a framework that combines safety-research contexts with multi-turn adversarial interactions to exploit gray-zone behavior in refusal systems. The method reportedly achieves very high attack success rates across frontier models by selectively relaxing defenses through domain and research framing.",
+      "payload_function": "technique_into_gray_zone_domain_contexts_can_blur_llm",
+      "effectiveness": {},
+      "best_for_models": [],
+      "tags": [
+        "arxiv",
+        "browser-fallback"
+      ],
+      "catch_all_data": {
+        "abstract": "This paper proposes Jargon, a framework that combines safety-research contexts with multi-turn adversarial interactions to exploit gray-zone behavior in refusal systems. The method reportedly achieves very high attack success rates across frontier models by selectively relaxing defenses through domain and research framing.",
+        "arxiv_url": "https://arxiv.org/abs/2604.15717",
+        "query": "browser_fallback"
+      },
+      "arxiv_id": "https://arxiv.org/abs/2604.15717",
+      "arxiv_title": "Into the Gray Zone: Domain Contexts Can Blur LLM Safety Boundaries"
+    },
+    "templatefuzz_finegrained_chat_template_fuzzing_jailbreaki...": {
+      "generator": "browser_fallback_arxiv",
+      "discovered": "2026-04-25",
+      "source": "arxiv",
+      "raw_source": null,
+      "encoding_levels": [
+        0
+      ],
+      "description": "[arXiv] TEMPLATEFUZZ: Fine-Grained Chat Template Fuzzing for Jailbreaking and Red Teaming LLMs\n\nTEMPLATEFUZZ systematically mutates chat-template elements to expose an underexplored jailbreak surface. It combines element-level mutation rules, heuristic search, and an active-learning oracle to drive prompt and template variants toward higher attack success while preserving task accuracy.",
+      "payload_function": "technique_templatefuzz_finegrained_chat_template_fuzzing_jailbreaki...",
+      "effectiveness": {},
+      "best_for_models": [],
+      "tags": [
+        "arxiv",
+        "browser-fallback"
+      ],
+      "catch_all_data": {
+        "abstract": "TEMPLATEFUZZ systematically mutates chat-template elements to expose an underexplored jailbreak surface. It combines element-level mutation rules, heuristic search, and an active-learning oracle to drive prompt and template variants toward higher attack success while preserving task accuracy.",
+        "arxiv_url": "https://arxiv.org/abs/2604.12232",
+        "query": "browser_fallback"
+      },
+      "arxiv_id": "https://arxiv.org/abs/2604.12232",
+      "arxiv_title": "TEMPLATEFUZZ: Fine-Grained Chat Template Fuzzing for Jailbreaking and Red Teaming LLMs"
     }
   },
   "research_history": [],

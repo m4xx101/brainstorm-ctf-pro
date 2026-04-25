@@ -1,15 +1,10 @@
-# Brainstorm CTF Pro — Knowledge Base
+# ⬡ FISSURE — Session Wiki
 
-## Structure
+Auto-generated knowledge base. Persists across sessions.
 
-```
-wiki/
-├── registry.json            # Master technique catalog (auto-updated)
-├── README.md                # This file
-├── models/                  # Per-model-version knowledge
-├── techniques/              # Technique discovery pages
-├── raw/sources/             # Raw evidence (arXiv, Reddit, Twitter, blogs)
-└── log.md                   # Research + session log
-```
-
-This wiki is auto-populated by research.py and score.py. Do not edit manually.
+## Directory Layout
+- `payloads/` — raw payloads, indexed by SHA256
+- `responses/` — model responses, indexed by SHA256
+- `checkpoints/` — session state snapshots for resume
+- `logs/` — session log entries
+- `models/` — per-model-version effectiveness data

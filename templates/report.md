@@ -1,4 +1,4 @@
-# Jailbreak Session Report
+# ⬡ FISSURE — Session Report
 
 **Target:** {{target}}
 **Date:** {{date}}

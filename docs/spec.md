@@ -1,6 +1,6 @@
-# Brainstorm CTF Pro — Autonomous Research & Knowledge Engine
+# ⬡ FISSURE — Autonomous Research & Knowledge Engine
 
-> Design spec for turning brainstorm-ctf-pro into a self-researching, self-improving,
+> Design spec for turning fissure into a self-researching, self-improving,
 > cross-session adversarial knowledge system.
 
 ## Problem Statement
@@ -246,7 +246,7 @@ If a technique is clearly novel (not just encoding variant of known technique):
 ```python
 if is_breakthrough:
     # Export a notification file for the cronjob delivery
-    write_file("/tmp/brainstorm-ctf-pro-breakthrough.txt",
+    write_file("/tmp/fissure-breakthrough.txt",
         f"BREAKTHROUGH: {name}"
         f"\nSource: {source_url}"
         f"\nDescription: {description[:200]}..."
@@ -397,7 +397,7 @@ Key changes:
 
 ```python
 # NEW: Load discovered techniques from registry on startup
-REGISTRY_PATH = "~/.hermes/skills/red-teaming/brainstorm-ctf-pro/wiki/registry.json"
+REGISTRY_PATH = "~/.hermes/skills/red-teaming/fissure/wiki/registry.json"
 
 def load_discovered_techniques():
     """Load dynamically discovered techniques from registry."""
@@ -448,7 +448,7 @@ Before taking any action, load the knowledge base:
   If not: "No prior knowledge. Starting fresh."
 
 ### Step 0.3: Check for Breakthroughs
-  If /tmp/brainstorm-ctf-pro-breakthrough.txt exists:
+  If /tmp/fissure-breakthrough.txt exists:
     Read notification -> present to user
 
 ### Step 0.4: Present Knowledge Summary
@@ -478,7 +478,7 @@ Before taking any action, load the knowledge base:
 python3 scripts/research.py --cron
 
 # If breakthrough detected:
-#   -> Saves /tmp/brainstorm-ctf-pro-breakthrough.txt
+#   -> Saves /tmp/fissure-breakthrough.txt
 #   -> Cronjob delivery sends notification to Telegram
 ```
 

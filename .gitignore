@@ -10,3 +10,11 @@ build/
 *.swp
 *.swo
 *~
+
+# Virtual environments
+.brainstorm-ctf*/
+.brainstorm-ctf*/
+.venv/
+venv/
+env/
+.venv*/

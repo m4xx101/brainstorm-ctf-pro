@@ -32,7 +32,8 @@ SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REGISTRY_PATH = os.path.join(SKILL_DIR, "wiki", "registry.json")
 RAW_DIR = os.path.join(SKILL_DIR, "wiki", "raw", "sources")
 LOG_PATH = os.path.join(SKILL_DIR, "wiki", "log.md")
-BREAKTHROUGH_FILE = "/tmp/brainstorm-ctf-pro-breakthrough.txt"
+BREAKTHROUGH_FILE = "/tmp/fissure-breakthrough.txt"
+FALLBACK_SIGNAL_FILE = os.path.join(RAW_DIR, ".browser-fallback-needed.json")
 
 # Ensure RAW_DIR subdirectories exist
 for sub in ["arxiv", "reddit", "blogs", "payloads", "twitter"]:
@@ -761,6 +762,75 @@ def main():
         f"- Total techniques in registry: {registry['last_technique_count']}"
     )
     append_to_log(log_entry)
+
+    # ── Write Browser Fallback Signal ──
+    need_fallback = []
+    
+    # Check if arXiv returned 0 (meaning HTTP failed or no matches)
+    if run_arxiv and stats["arxiv_found_raw"] == 0:
+        need_fallback.append({
+            "source": "arxiv",
+            "reason": "http_returned_zero",
+            "urls": [
+                f"https://arxiv.org/search/?query={q}&searchtype=all&start=0"
+                for q in ARXIV_QUERIES
+            ],
+            "instructions": (
+                "For each arXiv URL:\n"
+                "  1. browser_navigate(url)\n"
+                "  2. browser_scroll(down) to load results\n"
+                "  3. browser_snapshot(full=True) — look for paper titles, authors, dates\n"
+                "  4. For papers from last 14 days matching technique indicators:\n"
+                "     - Extract title, abstract (first 300 chars), arXiv ID, published date, categories\n"
+                "  5. Save to wiki/raw/sources/arxiv/<slug>.md"
+            )
+        })
+
+    # Check if Reddit returned 0 (usually 403/blocked)
+    if run_reddit and stats["reddit_found_raw"] == 0:
+        reddit_urls = []
+        for subreddit in REDDIT_SUBREDDITS:
+            for query in REDDIT_SEARCH_QUERIES:
+                encoded = urllib.parse.quote(query)
+                reddit_urls.append(
+                    f"https://old.reddit.com/r/{subreddit}/search?q={encoded}&sort=new&restrict_sr=on"
+                )
+        need_fallback.append({
+            "source": "reddit",
+            "reason": "http_returned_zero",
+            "urls": reddit_urls,
+            "instructions": (
+                "For each Reddit URL:\n"
+                "  1. browser_navigate(url) — use old.reddit.com (text-first, no JS requirements)\n"
+                "  2. browser_scroll(down) to load more results\n"
+                "  3. browser_snapshot(full=True)\n"
+                "  4. Look for post titles containing technique keywords (jailbreak, bypass, injection, etc.)\n"
+                "  5. For matching posts: click the title to open, read selftext\n"
+                "  6. Extract: title, selftext, score, permalink, subreddit, code blocks\n"
+                "  7. Save to wiki/raw/sources/reddit/<subreddit>/<slug>.md"
+            )
+        })
+
+    if need_fallback:
+        signal = {
+            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "sources_requiring_browser": need_fallback
+        }
+        try:
+            os.makedirs(os.path.dirname(FALLBACK_SIGNAL_FILE), exist_ok=True)
+            with open(FALLBACK_SIGNAL_FILE, "w") as f:
+                json.dump(signal, f, indent=2)
+            print(f"  [FALLBACK] Browser research needed — signal written to {FALLBACK_SIGNAL_FILE}", file=sys.stderr)
+        except IOError as e:
+            print(f"  [WARN] Failed to write fallback signal: {e}", file=sys.stderr)
+    else:
+        # Clean up stale fallback signal if sources succeeded
+        try:
+            if os.path.exists(FALLBACK_SIGNAL_FILE):
+                os.remove(FALLBACK_SIGNAL_FILE)
+                print("  [FALLBACK] Sources reached via HTTP — removing stale fallback signal", file=sys.stderr)
+        except OSError:
+            pass
 
     # ── Print JSON summary to stdout ──
     summary = {
