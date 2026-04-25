@@ -1,6 +1,7 @@
 # 🧠 Brainstorm CTF Pro
 
 > **The adversarial AI testing harness that doesn't pretend a Python loop can outthink you.**
+> **An AI security research harness. Built single-shot by an AI agent using qwen3.6-plus and Telegram. No laptop. No IDE. No VS Code. No copilot. No "let me set up my dev environment first." Just a VPS, Terminal, and unapologetic stubbornness.**
 
 ![Status](https://img.shields.io/badge/status-production%20ready-2ea44f?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
